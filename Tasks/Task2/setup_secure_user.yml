@@ -1,0 +1,51 @@
+---
+- name: Configure secure user and work environment
+  hosts: all
+  become: yes
+  vars:
+    username: "devops_user"
+    ssh_public_key_path: "~/.ssh/id_rsa.pub"
+    work_dir_path: "/opt/dev_workspace"
+
+  tasks:
+    - name: Create non-system user
+      ansible.builtin.user:
+        name: "{{ username }}"
+        shell: /bin/bash
+        create_home: yes
+        state: present
+
+    - name: Configure passwordless sudo access for the user
+      ansible.builtin.copy:
+        content: "{{ username }} ALL=(ALL) NOPASSWD: ALL"
+        dest: "/etc/sudoers.d/{{ username }}"
+        mode: '0440'
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: Configure SSH public key for the user
+      ansible.builtin.authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', ssh_public_key_path) }}"
+
+    - name: Disable password authentication in sshd_config
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+      notify: Restart SSH service
+
+    - name: Create directory in /opt with permissions 660
+      ansible.builtin.file:
+        path: "{{ work_dir_path }}"
+        state: directory
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: '0660'
+
+  handlers:
+    - name: Restart SSH service
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
