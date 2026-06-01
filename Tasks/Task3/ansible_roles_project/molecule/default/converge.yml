@@ -1,0 +1,21 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    target_users:
+      - username: "miguel"
+        uid: 1001
+        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ[...] miguel@desktop"
+        opt_dir: "/opt/miguel_workspace"
+      - username: "mbrayson"
+        uid: 1002
+        ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK[...] mbrayson@server"
+        opt_dir: "/opt/mbrayson_workspace"
+  tasks:
+    - name: Include manage_users role
+      ansible.builtin.include_role:
+        name: manage_users
+    - name: Include secure_ssh role
+      ansible.builtin.include_role:
+        name: secure_ssh

@@ -1,0 +1,7 @@
+---
+- name: Execute user management and SSH hardening via roles
+  hosts: all
+  become: true
+  roles:
+    - role: manage_users
+    - role: secure_ssh

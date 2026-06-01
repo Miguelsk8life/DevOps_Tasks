@@ -1,0 +1,7 @@
+---
+# Handlers for secure_ssh role
+
+- name: Restart ssh daemon
+  ansible.builtin.service:
+    name: ssh
+    state: restarted

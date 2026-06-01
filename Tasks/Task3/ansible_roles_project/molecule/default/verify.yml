@@ -1,0 +1,23 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if user 'miguel' exists
+      ansible.builtin.command: id miguel
+      register: user_check
+      failed_when: user_check.rc != 0
+
+    - name: Check if opt directory exists with correct ownership
+      ansible.builtin.stat:
+        path: /opt/miguel_workspace
+      register: dir_check
+      failed_when: >
+        not dir_check.stat.exists or
+        dir_check.stat.pw_name != 'miguel' or
+        dir_check.stat.mode != '0660'
+
+    - name: Check if PasswordAuthentication is disabled
+      ansible.builtin.command: grep "^PasswordAuthentication no" /etc/ssh/sshd_config
+      register: ssh_check
+      failed_when: ssh_check.rc != 0

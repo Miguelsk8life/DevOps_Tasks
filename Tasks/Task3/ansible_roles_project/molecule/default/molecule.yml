@@ -1,0 +1,22 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ansible-test-target
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    pre_build_image: true
+    privileged: true
+    command: /lib/systemd/systemd
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      interpreter_python: /usr/bin/python3
+  env:
+    ANSIBLE_ROLES_PATH: ../../roles # <-- ESTO ES LO CRÍTICO: Le dice a Ansible que busque las roles dos carpetas hacia atrás (en la raíz)
+verifier:
+  name: ansible

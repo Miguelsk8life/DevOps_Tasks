@@ -1,0 +1,11 @@
+---
+# Default variables for manage_users role
+target_users:
+  - username: "miguel"
+    uid: 1001
+    ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ[...] miguel@desktop"
+    opt_dir: "/opt/miguel_workspace"
+  - username: "mbrayson"
+    uid: 1002
+    ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK[...] mbrayson@server"
+    opt_dir: "/opt/mbrayson_workspace"
